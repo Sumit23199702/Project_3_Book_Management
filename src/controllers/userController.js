@@ -62,10 +62,11 @@ const createUser = async function (req, res) {
         if (!(password.length >= 8 && password.length <= 15)) {
             return res.status(400).send({ status: false, msg: "Password Should be minimum 8 characters and maximum 15 characters", });
         }
-
+        if(address){
         if (typeof address !== "object") {
             return res.status(400).send({ status: false, message: "Address must be in Object" });
         }
+    }
 
         // if (!isValidData(address)) {
         //     return res.status(400).send({ status: false, message: "Address is required." });

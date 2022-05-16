@@ -1,6 +1,6 @@
 const reviewModel = require("../models/reviewModels");
 const bookModel = require("../models/bookModels");
-const userModel = require("../models/userModels");
+// const userModel = require("../models/userModels");
 
 const { isValidRequestBody, isValidData, isValidObjectId } = require("../utils/validator");
 
@@ -23,9 +23,8 @@ const bookReview = async function (req, res) {
             return res.status(404).send({ status: false, message: "No book found with this id" })
         }
 
-        let is_Deleted = bookId.isDeleted;
-        if (is_Deleted == true) {
-            return res.status(404).send({ status: false, message: "Book is already deleted" })
+        if (findBookId.isDeleted==true) {
+            return res.status(400).send({ status: false, message: "Book is already deleted" })
         }
 
         let { rating, reviewedBy } = requestBody
@@ -56,7 +55,6 @@ const bookReview = async function (req, res) {
     }
 }
 
-// Here start Update 
 
 const reviewUpdate = async function (req, res) {
     try {
@@ -101,7 +99,7 @@ const reviewUpdate = async function (req, res) {
         }
 
         if (!isValidData(reviewedBy)) {
-            requestBody.reviewedBy = "Guest"
+            return res.status(400).send({ status: false, msg: "Please provide the reviewer's name " })
         }
 
         if (!isValidData(review)) {
@@ -132,7 +130,7 @@ const reviewDelete = async function (req, res) {
         }
 
         if (findBookId.isDeleted == true) {
-            return res.status(400).send({ status: false, message: "Book is already deleted" })
+            return res.status(400).send({ status: false, message: "review is already deleted" })
         }
 
         if (!isValidObjectId.test(reviewId)) {

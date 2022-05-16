@@ -68,8 +68,12 @@ const createBook = async function(req, res) {
         }
 
         if (!Array.isArray(subcategory)) {
+            return res.status(400).send({ status: false, message: "Subcategory Must be in Array" });
+        }
+
+        if (Array.isArray(subcategory)) {
             if (subcategory.length == 0) {
-                return res.status(400).send({ status: false, message: "Subcategory Must be in Array" });
+                return res.status(400).send({ status: false, message: "Subcategory should not be empty" });
             }
         }
 
@@ -121,9 +125,9 @@ const getBooksById = async function(req, res) {
             return res.status(400).send({ status: false, message: "Please enter the valid book Id" })
         }
 
-        let findBookId = await bookModel.findById({ _id: bookId }).select({ ISBN: 0 })
+        let findBookId = await bookModel.findById({ _id: bookId, isDeleted:false }).select({ ISBN: 0 })
 
-        if (findBookId.length == 0)
+        if (!findBookId)
             return res.status(404).send({ status: false, msg: "No Book Data Found" })
 
         let { _id, title, excerpt, userId, category, subcategory, review, isDeleted, deletedAt, releasedAt, createdAt, updatedAt } = findBookId
@@ -131,9 +135,6 @@ const getBooksById = async function(req, res) {
         let reviewsData = await reviewModel.find({ bookId }).select({ isDeleted: 0 })
 
         let bookDetails = { _id, title, excerpt, userId, category, subcategory, review, isDeleted, deletedAt, releasedAt, createdAt, updatedAt, reviewsData }
-
-        // let bookReview =JSON.parse(JSON.stringify(findBookId))
-        // bookReview.reviewsData = reviews
 
         res.status(200).send({ status: true, msg: "All Books", data: bookDetails })
 
@@ -157,7 +158,7 @@ const updateBooks = async function(req, res) {
             return res.status(400).send({ status: false, message: "Please enter the valid book Id" })
         }
 
-        let findBookId = await bookModel.findById({ bookId, isDeleted: false })
+        let findBookId = await bookModel.findById({_id: bookId, isDeleted: false })
         if (findBookId.length == 0)
             return res.status(404).send({ status: false, msg: "No Book Data Found" })
 
