@@ -1,7 +1,7 @@
 const userModel = require("../models/userModels");
 const jwt = require("jsonwebtoken");
 
-const { isValidData, isValidRequestBody, isValidEmail, isValidPhone,isValidName } = require("../utils/validator");
+const { isValidData, isValidRequestBody, isValidEmail, isValidPhone, isValidName } = require("../utils/validator");
 
 
 const createUser = async function (req, res) {
@@ -25,9 +25,9 @@ const createUser = async function (req, res) {
         if (!isValidData(name)) {
             return res.status(400).send({ status: false, message: "Name is required." });
         }
-        if(!isValidName.test(name)){
-            return res.status(400).send({status:false, msg: "Please enter a valid Name"}) 
-           }
+        if (!isValidName.test(name)) {
+            return res.status(400).send({ status: false, msg: "Please enter a valid Name" })
+        }
 
         if (!isValidData(phone)) {
             return res.status(400).send({ status: false, message: "Phone is required." });
@@ -62,16 +62,14 @@ const createUser = async function (req, res) {
         if (!(password.length >= 8 && password.length <= 15)) {
             return res.status(400).send({ status: false, msg: "Password Should be minimum 8 characters and maximum 15 characters", });
         }
-        if(address){
-        if (typeof address !== "object") {
-            return res.status(400).send({ status: false, message: "Address must be in Object" });
+        if (address) {
+            if (typeof address === "object") {
+                if (!Object.keys(address).length > 0) {
+                    return res.status(400).send({ status: false, message: "Please Enter Your Address" });
+                }
+            }
         }
-    }
 
-        // if (!isValidData(address)) {
-        //     return res.status(400).send({ status: false, message: "Address is required." });
-        // }
-        
         let createData = await userModel.create(requestBody);
         res.status(201).send({ status: true, message: "User data created successfully", data: createData, });
     }
@@ -108,7 +106,7 @@ const loginUser = async function (req, res) {
                 userId: matchUser._id.toString(),
                 Project: "Book Management",
                 batch: "Uranium",
-                iat: new Date().getTime()/ 1000 
+                iat: new Date().getTime() / 1000
                 //give you time in miliseconds. But time in jwt token exp is in seconds, therefore we have to divide result by 1000.
                 //(iat)Issued At- the time at which the JWT was issued.
             },
